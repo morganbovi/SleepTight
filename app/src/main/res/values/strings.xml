@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SleepTight</string>
+    <string name="notification_channel_name">Sleep sounds playback</string>
+    <string name="notification_idle">No sound playing</string>
+    <string name="notification_pause">Pause</string>
+    <string name="notification_resume">Resume</string>
+    <string name="notification_stop">✕</string>
+</resources>
