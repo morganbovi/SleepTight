@@ -7,9 +7,9 @@ import com.apkrocket.sleeptight.audio.SoundType
 class SoundPalette(val top: Color, val bottom: Color, val accent: Color)
 
 val soundPalettes = mapOf(
-    SoundType.WHITE_NOISE to SoundPalette(Color(0xFF3A3F4E), Color(0xFF14161D), Color(0xFFC7CEE0)),
-    SoundType.PINK_NOISE to SoundPalette(Color(0xFF473852), Color(0xFF1B1420), Color(0xFFECBEE0)),
-    SoundType.BROWN_NOISE to SoundPalette(Color(0xFF4A3420), Color(0xFF1B120A), Color(0xFFD79A5C)),
+    SoundType.WHITE_NOISE to SoundPalette(Color(0xFF464C63), Color(0xFF14161D), Color(0xFFD8E1FF)),
+    SoundType.PINK_NOISE to SoundPalette(Color(0xFF5E3F6E), Color(0xFF1F1526), Color(0xFFFF9BDB)),
+    SoundType.BROWN_NOISE to SoundPalette(Color(0xFF5C3A16), Color(0xFF1D1207), Color(0xFFF0A94A)),
     SoundType.RAIN to SoundPalette(Color(0xFF29384C), Color(0xFF0A0D14), Color(0xFF8FB4D6)),
     SoundType.OCEAN_WAVES to SoundPalette(Color(0xFF15495F), Color(0xFF051019), Color(0xFF5FC2DE)),
     SoundType.WIND to SoundPalette(Color(0xFF37474F), Color(0xFF11161A), Color(0xFFD7E3E8)),
