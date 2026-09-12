@@ -6,9 +6,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -35,8 +37,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.apkrocket.sleeptight.audio.SoundType
+import com.apkrocket.sleeptight.features.picker.SoundPickerUiModel.Event.AboutClicked
 import com.apkrocket.sleeptight.features.picker.SoundPickerUiModel.Event.BackClicked
+import com.apkrocket.sleeptight.features.picker.SoundPickerUiModel.Event.PlayPauseClicked
 import com.apkrocket.sleeptight.features.picker.SoundPickerUiModel.Event.SoundClicked
+import com.apkrocket.sleeptight.ui.ControlBarLeftSlot
+import com.apkrocket.sleeptight.ui.PlaybackControlBar
 import com.apkrocket.sleeptight.ui.background.defaultSoundPalette
 import com.apkrocket.sleeptight.ui.background.soundPalettes
 import com.apkrocket.sleeptight.ui.icons.icon
@@ -62,17 +68,42 @@ fun SoundPickerScreen(
             )
         }
     ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+        val hasActiveSound = uiModel.activeSoundType != null
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(uiModel.sounds) { type ->
-                SoundCard(type = type, onClick = { uiModel.eventHandler(SoundClicked(type)) })
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                // Leave room so the floating control bar never covers the last row.
+                contentPadding = if (hasActiveSound) PaddingValues(bottom = 96.dp) else PaddingValues(0.dp),
+            ) {
+                items(uiModel.sounds) { type ->
+                    SoundCard(type = type, onClick = { uiModel.eventHandler(SoundClicked(type)) })
+                }
+            }
+
+            if (uiModel.activeSoundType != null) {
+                PlaybackControlBar(
+                    leftSlot = ControlBarLeftSlot.NowPlaying(uiModel.activeSoundType),
+                    isPlaying = uiModel.isPlaying,
+                    playPauseEnabled = true,
+                    onLeftSlotClick = { uiModel.eventHandler(BackClicked) },
+                    onPlayPauseClick = { uiModel.eventHandler(PlayPauseClicked) },
+                    onAboutClick = { uiModel.eventHandler(AboutClicked) },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .padding(horizontal = 28.dp, vertical = 16.dp)
+                )
             }
         }
     }

@@ -2,6 +2,7 @@ package com.apkrocket.sleeptight.features.player
 
 import android.content.Context
 import android.media.AudioManager
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -35,6 +36,11 @@ class PlayerPresenter(
         val audioManager = remember { context.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
         val maxVolume = remember { audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) }
         val playerState by soundEngine.state.collectAsState()
+
+        // With a sound loaded, back feels more like "go choose something else" than "exit".
+        BackHandler(enabled = playerState.type != null) {
+            navigator.goToPicker()
+        }
 
         fun currentStep() = (audioManager.getStreamVolume(AudioManager.STREAM_MUSIC) * 10f / maxVolume).roundToInt()
 

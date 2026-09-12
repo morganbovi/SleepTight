@@ -6,10 +6,15 @@ import com.apkrocket.sleeptight.ui.presenter.EventHandler
 data class SoundPickerUiModel(
     val sounds: List<SoundType>,
     val showBackButton: Boolean,
+    /** Non-null when something is already playing/paused, so the control bar can appear. */
+    val activeSoundType: SoundType?,
+    val isPlaying: Boolean,
     val eventHandler: EventHandler<Event>,
 ) {
     sealed interface Event {
         data class SoundClicked(val type: SoundType) : Event
         data object BackClicked : Event
+        data object PlayPauseClicked : Event
+        data object AboutClicked : Event
     }
 }

@@ -7,37 +7,23 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,6 +32,8 @@ import com.apkrocket.sleeptight.features.player.PlayerUiModel.Event.AboutClicked
 import com.apkrocket.sleeptight.features.player.PlayerUiModel.Event.ChooseSoundClicked
 import com.apkrocket.sleeptight.features.player.PlayerUiModel.Event.PlayPauseClicked
 import com.apkrocket.sleeptight.features.player.PlayerUiModel.Event.VolumeDragged
+import com.apkrocket.sleeptight.ui.ControlBarLeftSlot
+import com.apkrocket.sleeptight.ui.PlaybackControlBar
 import com.apkrocket.sleeptight.ui.background.SoundBackground
 
 /** Drag distance per volume step — small enough that a short flick moves several notches. */
@@ -132,8 +120,13 @@ private fun PlayerScreenContent(uiModel: PlayerUiModel) {
             VolumeFillOverlay(step = uiModel.volumeStep, modifier = Modifier.fillMaxSize())
         }
 
-        PlayerControlBar(
-            uiModel = uiModel,
+        PlaybackControlBar(
+            leftSlot = ControlBarLeftSlot.ChooseSound,
+            isPlaying = uiModel.isPlaying,
+            playPauseEnabled = uiModel.soundType != null,
+            onLeftSlotClick = { uiModel.eventHandler(ChooseSoundClicked) },
+            onPlayPauseClick = { uiModel.eventHandler(PlayPauseClicked) },
+            onAboutClick = { uiModel.eventHandler(AboutClicked) },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
@@ -173,82 +166,6 @@ private fun VolumeFillOverlay(step: Int, modifier: Modifier = Modifier) {
             fontSize = 44.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.align(Alignment.Center)
-        )
-    }
-}
-
-/** One cohesive bar for every transport control, instead of separate floating shapes. */
-@Composable
-private fun PlayerControlBar(uiModel: PlayerUiModel, modifier: Modifier = Modifier) {
-    val hasSound = uiModel.soundType != null
-
-    Row(
-        modifier = modifier
-            .clip(RoundedCornerShape(32.dp))
-            .background(Color.Black.copy(alpha = 0.45f))
-            .padding(vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        ControlBarItem(
-            icon = Icons.Filled.GridView,
-            label = "Sounds",
-            onClick = { uiModel.eventHandler(ChooseSoundClicked) }
-        )
-
-        PlayPauseButton(
-            isPlaying = uiModel.isPlaying,
-            enabled = hasSound,
-            onClick = { uiModel.eventHandler(PlayPauseClicked) }
-        )
-
-        ControlBarItem(
-            icon = Icons.Filled.Info,
-            label = "About",
-            onClick = { uiModel.eventHandler(AboutClicked) }
-        )
-    }
-}
-
-@Composable
-private fun ControlBarItem(
-    icon: ImageVector,
-    label: String,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
-) {
-    val alpha = if (enabled) 1f else 0.35f
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .then(
-                if (enabled) Modifier.pointerInput(Unit) { detectTapGestures(onTap = { onClick() }) } else Modifier
-            )
-            .padding(horizontal = 20.dp, vertical = 2.dp)
-    ) {
-        Icon(icon, contentDescription = label, tint = Color.White.copy(alpha = alpha), modifier = Modifier.size(26.dp))
-        Text(label, color = Color.White.copy(alpha = alpha), fontSize = 12.sp, fontWeight = FontWeight.Medium)
-    }
-}
-
-@Composable
-private fun PlayPauseButton(isPlaying: Boolean, enabled: Boolean, onClick: () -> Unit) {
-    val alpha = if (enabled) 1f else 0.35f
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .size(60.dp)
-            .clip(CircleShape)
-            .background(Color.White.copy(alpha = alpha))
-            .then(
-                if (enabled) Modifier.pointerInput(Unit) { detectTapGestures(onTap = { onClick() }) } else Modifier
-            )
-    ) {
-        Icon(
-            imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-            contentDescription = if (isPlaying) "Pause" else "Play",
-            tint = Color.Black.copy(alpha = if (enabled) 0.85f else 0.4f),
-            modifier = Modifier.size(30.dp)
         )
     }
 }
